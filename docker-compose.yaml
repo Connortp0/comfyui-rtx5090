@@ -1,0 +1,18 @@
+services:
+  comfyui:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: comfyui-rtx5090
+    ports:
+      - "8188:8188"
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+    volumes:
+      - ./comfyui_data:/ComfyUI_data  # Ensures ComfyUI files are correctly mapped
+    command: ["bash", "/start.sh"]  # Run setup script before launching
