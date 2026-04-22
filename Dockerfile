@@ -8,7 +8,7 @@ RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
 # Install PyTorch
-RUN /venv/bin/pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
+RUN /venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 
 # Copy setup and start and allow to run
 COPY setup.sh /setup.sh
