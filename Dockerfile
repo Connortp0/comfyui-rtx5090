@@ -26,6 +26,9 @@ RUN pip install --upgrade pip && \
 # Install ComfyUI dependencies
 RUN pip install -r requirements.txt
 
+# Install ComfyUI Manager
+RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /app/ComfyUI/custom_nodes/ComfyUI-Manager
+
 # Expose ComfyUI port
 EXPOSE 8188
 
