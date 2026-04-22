@@ -1,20 +1,33 @@
-FROM nvidia/cuda:12.8.0-devel-ubuntu24.04
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
 
-# Install Python & dependencies
-RUN apt update && apt install -y python3.12 python3-pip python3.12-venv python3-opencv libopencv-dev git curl wget
+ENV DEBIAN_FRONTEND=noninteractive
+
+# System dependencies
+RUN apt-get update && apt-get install -y \
+    git python3 python3-pip python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create workspace
+WORKDIR /app
+
+# Clone ComfyUI
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git
+
+WORKDIR /app/ComfyUI
 
 # Create virtual environment
-RUN python3 -m venv /venv
-ENV PATH="/venv/bin:$PATH"
+RUN python3 -m venv venv
+ENV PATH="/app/ComfyUI/venv/bin:$PATH"
 
-# Install PyTorch
-RUN /venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+# Install PyTorch (CUDA 12.1)
+RUN pip install --upgrade pip && \
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-# Copy setup and start and allow to run
-COPY setup.sh /setup.sh
-COPY start.sh /start.sh
-RUN chmod +x /setup.sh /start.sh
+# Install ComfyUI dependencies
+RUN pip install -r requirements.txt
 
-# Expose Ports & Run Setup Script
+# Expose ComfyUI port
 EXPOSE 8188
-CMD ["bash", "/start.sh"]  # Run initialization script
+
+# Run ComfyUI
+CMD ["python3", "main.py", "--listen", "0.0.0.0"]

@@ -1,18 +1,21 @@
 services:
   comfyui:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    image: comfyui-rtx5090
+    build: .
+    container_name: comfyui
+    restart: unless-stopped
+
     ports:
       - "8188:8188"
-    restart: unless-stopped
+
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               capabilities: [gpu]
+
     volumes:
-      - ./comfyui_data:/ComfyUI_data  # Ensures ComfyUI files are correctly mapped
-    command: ["bash", "/start.sh"]  # Run setup script before launching
+      - ./comfyui_data:/app/ComfyUI
+
+    environment:
+      PYTORCH_CUDA_ALLOC_CONF: "max_split_size_mb:512"
