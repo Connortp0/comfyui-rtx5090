@@ -1,5 +1,8 @@
 # **ComfyUI RTX5090 - Docker**
 
+> **Note**
+> This docker container is mainly for RTX 5090 but is compatible with GPUs that support cuda 12.x.
+
 This guide walks you through the **installation, configuration, and optimization** of your **ComfyUI Docker environment**, ensuring easy **model management** and **GPU acceleration**.
 
 ## **📂 Project Directory Structure**
@@ -7,8 +10,8 @@ This guide walks you through the **installation, configuration, and optimization
 comfyui-rtx5090/
 │── Dockerfile            # Defines container setup
 │── docker-compose.yaml   # Manages services & mounts
-│── comfyui_data/         # Contains ComfyUI application files
 │── comfyui_models/       # Separate folder for models
+│── comfyui_output/       # Separate folder for output
 ```
 
 ---
@@ -17,14 +20,14 @@ comfyui-rtx5090/
 Make sure you have:
 ✅ **Docker** (Install from [Docker’s website](https://docs.docker.com/get-docker/))  
 ✅ **Docker Compose** (Comes with Docker Desktop or install separately)  
-✅ **GPU Drivers** (Ensure compatibility with **CUDA 12.8**)
+✅ **GPU Drivers** (Ensure compatibility with **CUDA 12.x**)
 
 ---
 
 ## **📥 Step 2: Clone the Repository**
 Navigate to your workspace and clone the setup:
 ```bash
-git clone https://github.com/YOUR_USERNAME/comfyui-rtx5090.git
+git clone https://github.com/Connortp0/comfyui-rtx5090.git
 cd comfyui-rtx5090
 ```
 
@@ -34,26 +37,6 @@ cd comfyui-rtx5090
 ### **A. Setting Up the Container**
 Your **`docker-compose.yaml`** separates application files and models:
 NOTE: Modifying the **`docker-compose.yaml`** file is not recommended unless you understand what most of it does.
-```yaml
-version: '3.8'
-services:
-  comfyui:
-    build:
-      context: ./comfyui_data  # Stores ComfyUI container files
-      dockerfile: ../Dockerfile
-    image: comfyui-rtx5090
-    ports:
-      - "8188:8188"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-    volumes:
-      - ./comfyui_models:/ComfyUI/models  # Models are stored separately
-    command: ["/venv/bin/python", "main.py", "--listen", "0.0.0.0"]
-```
 
 ### **B. Organizing Models**
 Create a dedicated model directory:
@@ -72,7 +55,7 @@ comfyui_models/
 ---
 
 ## **🚀 Step 4: Build & Run the Container**
-Building takes about 15-30 minutes depending on your pc and internet connection as it downloads about 35GB of data.
+Building takes about 15-30 minutes depending on your pc and internet connection as it downloads and builds.
 Now, deploy ComfyUI with Docker:
 ```bash
 docker-compose up --build -d
@@ -99,13 +82,6 @@ To pull the latest updates while keeping your models intact:
 docker-compose pull
 docker-compose up --build -d
 ```
-
----
-
-## **⚙️ Step 6: Optimizing Your Setup**
-- **Modify workflows** → Drag & drop `.json` or `.png` files into ComfyUI  
-- **Fine-tune prompts** → Adjust LoRA weights & refine descriptions  
-- **Enhance performance** → Tune `--listen` and `--port` settings  
 
 ---
 

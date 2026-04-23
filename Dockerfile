@@ -1,13 +1,12 @@
-FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
+FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # System dependencies
 RUN apt-get update && apt-get install -y \
-    git python3 python3-pip python3-venv \
+    git python3 python3-pip python3-venv build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Create workspace
 WORKDIR /app
 
 # Clone ComfyUI
@@ -19,18 +18,18 @@ WORKDIR /app/ComfyUI
 RUN python3 -m venv venv
 ENV PATH="/app/ComfyUI/venv/bin:$PATH"
 
-# Install PyTorch (CUDA 12.1)
-RUN pip install --upgrade pip && \
-    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# Upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 
-# Install ComfyUI dependencies
+# Install ComfyUI dependencies FIRST
 RUN pip install -r requirements.txt
+
+# Install PyTorch NIGHTLY with CUDA 12.4 (supports RTX 5090)
+RUN pip install --upgrade --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu124
 
 # Install ComfyUI Manager
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /app/ComfyUI/custom_nodes/ComfyUI-Manager
 
-# Expose ComfyUI port
 EXPOSE 8188
 
-# Run ComfyUI
 CMD ["python3", "main.py", "--listen", "0.0.0.0"]

@@ -16,6 +16,7 @@ services:
 
     volumes:
       - ./comfyui_models:/app/ComfyUI/models
+      - ./comfyui_output:/app/ComfyUI/output
 
     environment:
       PYTORCH_CUDA_ALLOC_CONF: "max_split_size_mb:512"
